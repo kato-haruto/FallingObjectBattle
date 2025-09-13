@@ -57,8 +57,12 @@ public class PlayerManager : MonoBehaviour
     {
         canMove = false;
         rb.useGravity = true;
+        // Blockに「落下開始」を通知
+        Block block = currentBlock.GetComponent<Block>();
+        block.OnDropped();
+
         currentBlock = null;
-        Invoke(nameof(SpawnNewBlock), 1f); // 少し遅れて次を生成
+        Invoke(nameof(SpawnNewBlock), 1f); // 次を生成
     }
     float GetHorizontalInput()
     {
