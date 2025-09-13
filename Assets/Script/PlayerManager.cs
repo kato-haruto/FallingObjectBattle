@@ -34,8 +34,15 @@ public class PlayerManager : MonoBehaviour
     void SpawnNewBlock()
     {
         currentBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity);
+
+        // Rigidbodyを取得
         rb = currentBlock.GetComponent<Rigidbody>();
         rb.useGravity = false;
+
+        // Blockスクリプトを取得してプレイヤー番号をセット
+        Block block = currentBlock.GetComponent<Block>();
+        block.playerNumber = playerNumber;
+
         canMove = true;
     }
     void HandleMovement()
@@ -53,10 +60,9 @@ public class PlayerManager : MonoBehaviour
         currentBlock = null;
         Invoke(nameof(SpawnNewBlock), 1f); // 少し遅れて次を生成
     }
-    // 入力処理をプレイヤー番号で分ける
     float GetHorizontalInput()
     {
-        if (playerNumber == 1) 
+        if (playerNumber == 1)
             return Input.GetKey(KeyCode.A) ? -1 : Input.GetKey(KeyCode.D) ? 1 : 0; //1P移動操作
         else
             return Input.GetKey(KeyCode.LeftArrow) ? -1 : Input.GetKey(KeyCode.RightArrow) ? 1 : 0; //2P移動操作
