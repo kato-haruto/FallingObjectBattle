@@ -4,19 +4,23 @@ public class PlayerManager : MonoBehaviour
 {
     [Header("プレイヤー設定")]
     public int playerNumber = 1; // 1 = 1P, 2 = 2P
+
     [Header("ブロック設定")]
     public GameObject blockPrefab;
     public Transform spawnPoint;
     private GameObject currentBlock;
     private Rigidbody rb;
     private bool canMove = true;
+
     [Header("移動関連")]
     public float moveSpeed = 5f;
     public float moveLimitX = 5f;
+
     void Start()
     {
         SpawnNewBlock();
     }
+
     void Update()
     {
         if (currentBlock == null) return;
@@ -31,7 +35,9 @@ public class PlayerManager : MonoBehaviour
             }
         }
     }
-    void SpawnNewBlock()
+
+    // --- ブロック生成 ---
+    public void SpawnNewBlock() // ★public に変更（Block から呼ばれるので）
     {
         currentBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity);
 
@@ -45,6 +51,7 @@ public class PlayerManager : MonoBehaviour
 
         canMove = true;
     }
+
     void HandleMovement()
     {
         float horizontal = GetHorizontalInput();
@@ -53,17 +60,19 @@ public class PlayerManager : MonoBehaviour
         pos.x = Mathf.Clamp(pos.x, spawnPoint.position.x - moveLimitX, spawnPoint.position.x + moveLimitX);
         currentBlock.transform.position = pos;
     }
+
     void DropBlock()
     {
         canMove = false;
         rb.useGravity = true;
-        // Blockに「落下開始」を通知
+
+        // Blockに「落下開始」を通知（自分を渡す）
         Block block = currentBlock.GetComponent<Block>();
-        block.OnDropped();
+        block.OnDropped(this);
 
         currentBlock = null;
-        Invoke(nameof(SpawnNewBlock), 1f); // 次を生成
     }
+
     float GetHorizontalInput()
     {
         if (playerNumber == 1)
@@ -71,6 +80,7 @@ public class PlayerManager : MonoBehaviour
         else
             return Input.GetKey(KeyCode.LeftArrow) ? -1 : Input.GetKey(KeyCode.RightArrow) ? 1 : 0; //2P移動操作
     }
+
     bool GetDropInput()
     {
         if (playerNumber == 1)
